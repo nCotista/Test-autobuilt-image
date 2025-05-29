@@ -26,5 +26,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner.lowercase() }}/my-app:latest
-            ghcr.io/${{ github.repository_owner.lowercase() }}/my-app:${{ github.sha }}
+            ghcr.io/ncotista/my-app:latest
+            ghcr.io/ncotista/my-app:${{ github.sha }}

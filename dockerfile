@@ -13,38 +13,33 @@
 
 # EXPOSE 80
 # CMD ["nginx", "-g", "daemon off;"]
-# Stage 1: Build the React application
-FROM node:21 AS build
+# STEP 1: Build React app
+FROM node:18 AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY src/package.json src/package-lock.json ./
-
-# Install dependencies
+# ติดตั้ง dependencies
+COPY package*.json ./
 RUN npm install
 
-# Copy the source code and .env file
-COPY src/src ./src
-COPY src/public ./public
-COPY src/.env .env
+# คัดลอก source code + .env
+COPY . .
 
-# Build the application
+# ✅ React จะอ่าน .env ตรงนี้ตอน build
 RUN npm run build
 
-# Stage 2: Serve the React application
+# STEP 2: Serve with nginx
 FROM nginx:alpine
 
-# Copy the build files from the first stage
+# ลบ default nginx index page
+RUN rm -rf /usr/share/nginx/html/*
+
+# ✅ คัดลอก build ที่ถูกสร้างจาก step แรก
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Copy the custom Nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
+# ✅ เพิ่ม nginx config ถ้ามี (ไม่บังคับ)
+# COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose ports 80 and 443
 EXPOSE 80
-EXPOSE 443
 
-# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]

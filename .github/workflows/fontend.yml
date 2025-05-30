@@ -7,6 +7,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:  # Added permissions block
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout code

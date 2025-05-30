@@ -1,34 +1,46 @@
-# STEP 1: Build React App
-FROM node:18-slim AS build
+# # Step 1: Build React
+# FROM node:18 AS build
+# WORKDIR /app
+# COPY package*.json ./
+# RUN npm install
+# COPY . .
+# RUN npm run build
 
-# ติดตั้ง system dependency สำหรับ build (รองรับ node-gyp, bcrypt, sharp ฯลฯ)
-RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
+# # Step 2: Serve with Nginx
+# FROM nginx:alpine
+# COPY --from=build /app/build /usr/share/nginx/html
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# EXPOSE 80
+# CMD ["nginx", "-g", "daemon off;"]
+# STEP 1: Build React app
+FROM node:18 AS build
 
 WORKDIR /app
 
-# คัดลอก package.json ก่อน เพื่อให้ layer npm cache ได้
+# ติดตั้ง dependencies
 COPY package*.json ./
+RUN npm install
 
-# แสดงเวอร์ชันเพื่อตรวจสอบ และติดตั้ง dependency
-RUN node -v && npm -v && npm install
-
-# คัดลอก source code ที่เหลือ
+# คัดลอก source code + .env
 COPY . .
 
-# สร้าง production build
+# ✅ React จะอ่าน .env ตรงนี้ตอน build
 RUN npm run build
 
-# STEP 2: Serve ด้วย nginx
+# STEP 2: Serve with nginx
 FROM nginx:alpine
 
-# ลบ default nginx html page
+# ลบ default nginx index page
 RUN rm -rf /usr/share/nginx/html/*
 
-# คัดลอก build React
+# ✅ คัดลอก build ที่ถูกสร้างจาก step แรก
 COPY --from=build /app/build /usr/share/nginx/html
 
-# หากมี nginx.conf ให้ใช้
+# ✅ เพิ่ม nginx config ถ้ามี (ไม่บังคับ)
 COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80
+EXPOSE 443
+
 CMD ["nginx", "-g", "daemon off;"]

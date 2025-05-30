@@ -7,8 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-          REPO: "default-repo" # Set default value if step fails
 
     steps:
       - name: Checkout code
@@ -30,11 +28,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_PAT || secrets.GITHUB_TOKEN }}
 
-      - name: downcase REPO
-        run: |
-          REPO=$(echo "${github.repository_owner}" | tr '[:upper:]' '[:lower:]')
-          echo "REPO=$REPO" >> $GITHUB_ENV
-       
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -42,5 +35,5 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ env.REPO }}/test-autobuilt-image:latest
-            ghcr.io/${{ env.REPO }}/test-autobuilt-image:${{ github.sha }}
+            ghcr.io/ncotista/test-autobuilt-image:latest
+            ghcr.io/ncotista/test-autobuilt-image:${{ github.sha }}

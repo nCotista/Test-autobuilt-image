@@ -27,6 +27,13 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_PAT || secrets.GITHUB_TOKEN }}
+      
+      - name: Set lowercase repository owner
+        id: set_repo_owner
+        run: |
+          REPO_OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "::set-output name=repo_owner_lower::$REPO_OWNER_LOWER"
+
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -35,5 +42,5 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner == github.repository_owner && format('{0}', toJSON(github.repository_owner)) }}/test-autobuilt-image:latest
-            ghcr.io/${{ github.repository_owner == github.repository_owner && format('{0}', toJSON(github.repository_owner)) }}/test-autobuilt-image:${{ github.sha }}
+            ghcr.io/${{ steps.set_repo_owner.outputs.repo_owner_lower }}/test-autobuilt-image:latest
+            ghcr.io/${{ steps.set_repo_owner.outputs.repo_owner_lower }}/test-autobuilt-image:${{ github.sha }}

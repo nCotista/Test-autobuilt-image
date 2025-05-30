@@ -1,4 +1,4 @@
-module my-backend
+module github.com/ncotista/test-autobuilt-image
 
 go 1.24.3
 

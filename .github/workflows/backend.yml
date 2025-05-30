@@ -20,13 +20,24 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.21'
+          go-version: '1.24'
 
       - name: Set lowercase repository
         id: set_repo
         run: |
           REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           echo "REPO_LOWER=$REPO_LOWER" >> $GITHUB_ENV
+      
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: |
+              ~/.cache/go-build
+              ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('backend/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+    
 
       - name: Build Go binary
         run: |

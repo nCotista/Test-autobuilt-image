@@ -32,6 +32,8 @@ jobs:
         run: |
           REPO=$(echo "${github.repository_owner}" | tr '[:upper:]' '[:lower:]')
           echo "REPO=$REPO" >> $GITHUB_ENV
+        env:
+          REPO: "default-repo" # Set default value if step fails
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5

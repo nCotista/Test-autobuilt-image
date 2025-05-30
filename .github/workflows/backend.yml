@@ -36,8 +36,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./Backend  # ✅ โฟลเดอร์ของ Go backend
-          file: ./Backend/Dockerfile
+          context: ./ฺBackend  # ✅ โฟลเดอร์ของ Go backend
+          file: ./ฺBackend/Dockerfile
           push: true
           tags: |
             ghcr.io/${{ env.REPO_LOWER }}-backend:latest

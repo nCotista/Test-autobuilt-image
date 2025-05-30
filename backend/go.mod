@@ -1,4 +1,4 @@
-module my-backend
+module Test-autobuilt-image/backend
 
 go 1.24.3
 

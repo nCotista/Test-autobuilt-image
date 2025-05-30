@@ -1,10 +1,11 @@
-name: Build & Push React App to GHCR
+name: Build & Push Go Backend to GHCR
 
 on:
   push:
     branches:
       - main
       - testing
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,7 +25,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_PAT || secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GHCR_PAT|| secrets.GITHUB_TOKEN }}
 
       - name: Set lowercase repository
         id: set_repo
@@ -35,9 +36,9 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./frontend
-          file: ./frontend/Dockerfile
+          context: ./backend  # ✅ โฟลเดอร์ของ Go backend
+          file: ./backend/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ env.REPO_LOWER }}:latest
-            ghcr.io/${{ env.REPO_LOWER }}:${{ github.sha }}
+            ghcr.io/${{ env.REPO_LOWER }}-backend:latest
+            ghcr.io/${{ env.REPO_LOWER }}-backend:${{ github.sha }}

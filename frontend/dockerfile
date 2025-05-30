@@ -9,10 +9,10 @@ RUN npm install
 
 # คัดลอก source code
 COPY src/ .
-# ✅ คัดลอก .env ที่สร้างไว้จาก GitHub Workflow
+#  คัดลอก .env ที่สร้างไว้จาก GitHub Workflow
 # COPY ../.env .env
 
-# ✅ React จะอ่าน .env ตรงนี้ตอน build
+
 RUN npm run build
 
 # STEP 2: Serve with nginx
@@ -21,10 +21,10 @@ FROM nginx:alpine
 # ลบ default nginx index page
 RUN rm -rf /usr/share/nginx/html/*
 
-# ✅ คัดลอก build ที่ถูกสร้างจาก step แรก
+# คัดลอก build ที่ถูกสร้างจาก step แรก
 COPY --from=build /app/build /usr/share/nginx/html
 
-# ✅ เพิ่ม nginx config ถ้ามี (ไม่บังคับ)
+# เพิ่ม nginx config 
 COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80

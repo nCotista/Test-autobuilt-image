@@ -1,4 +1,4 @@
-name: Build & Push Go Backend to GHCR
+name: Build & Push Go App to GHCR
 
 on:
   push:
@@ -16,34 +16,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
-      - name: Prune Docker system
-        run: docker system prune -af
 
-      - name: Docker system prune
-        run: docker system prune -af
-
-      - name: Remove existing builder if exists
-        run: docker buildx rm custom-builder || true
-
-      - name: Create new isolated builder
-        run: docker buildx create --use --name custom-builder --driver docker-container
-
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: Set up Go
+        uses: actions/setup-go@v4
         with:
-          install: true
-      
-      - name: Create isolated builder
-        run: docker buildx create --use --name isolated-builder
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_PAT|| secrets.GITHUB_TOKEN }}
+          go-version: '1.21'  # หรือเวอร์ชัน Go ที่คุณใช้
 
       - name: Set lowercase repository
         id: set_repo
@@ -51,13 +28,25 @@ jobs:
           REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           echo "REPO_LOWER=$REPO_LOWER" >> $GITHUB_ENV
 
+      - name: Build
+        run: go build -o main . # แก้ไขตามชื่อไฟล์หลักของคุณ
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT || secrets.GITHUB_TOKEN }}
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./ฺBackend  # ✅ โฟลเดอร์ของ Go backend
-          file: ./ฺBackend/Dockerfile
+          context: ./Backend  # เปลี่ยนเป็น directory ที่มี Dockerfile ของคุณ
+          file: ./Backend/Dockerfile # แก้ไขตาม path ของ Dockerfile ของคุณ
           push: true
-          no-cache: true
           tags: |
-            ghcr.io/${{ env.REPO_LOWER }}-backend:latest
-            ghcr.io/${{ env.REPO_LOWER }}-backend:${{ github.sha }}
+            ghcr.io/${{ env.REPO_LOWER }}:latest
+            ghcr.io/${{ env.REPO_LOWER }}:${{ github.sha }}

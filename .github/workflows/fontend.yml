@@ -42,5 +42,5 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ steps.set_repo_owner.outputs.repo_owner_lower }}/test-autobuilt-image:latest
-            ghcr.io/${{ steps.set_repo_owner.outputs.repo_owner_lower }}/test-autobuilt-image:${{ github.sha }}
+            ghcr.io/${{ steps.set_repo_owner.outputs.repo_owner_lower }}/Test-autobuilt-image:latest
+            ghcr.io/${{ steps.set_repo_owner.outputs.repo_owner_lower }}/Test-autobuilt-image:${{ github.sha }}

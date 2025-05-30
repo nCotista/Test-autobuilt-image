@@ -10,7 +10,7 @@ RUN npm install
 # คัดลอก source code
 COPY src/ .
 # ✅ คัดลอก .env ที่สร้างไว้จาก GitHub Workflow
-COPY ../.env .env
+# COPY ../.env .env
 
 # ✅ React จะอ่าน .env ตรงนี้ตอน build
 RUN npm run build

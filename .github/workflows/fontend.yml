@@ -7,19 +7,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:  # Added permissions block
+    permissions:
       contents: read
       packages: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      # - name: Generate .env file from secrets
-      #   run: |
-      #     echo "REACT_APP_API=${{ secrets.REACT_APP_API }}" >> frontend/.env
-      #     echo "REACT_APP_PORT=${{ secrets.REACT_APP_PORT }}" >> frontend/.env
-      #     echo "REACT_APP_ENV=production" >> frontend/.env
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -29,13 +23,13 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      
+          password: ${{ secrets.GHCR_PAT || secrets.GITHUB_TOKEN }}
+
       - name: Set lowercase repository
         id: set_repo
         run: |
           REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          echo "::set-output name=repo_lower::$REPO_LOWER"
+          echo "REPO_LOWER=$REPO_LOWER" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -44,5 +38,5 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ steps.set_repo.outputs.repo_lower }}:latest
-            ghcr.io/${{ steps.set_repo.outputs.repo_lower }}:${{ github.sha }}
+            ghcr.io/${{ env.REPO_LOWER }}:latest
+            ghcr.io/${{ env.REPO_LOWER }}:${{ github.sha }}

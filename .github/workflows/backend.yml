@@ -20,6 +20,16 @@ jobs:
       - name: Prune Docker system
         run: docker system prune -af
 
+      - name: Docker system prune
+        run: docker system prune -af
+
+      - name: Remove existing builder if exists
+        run: docker buildx rm custom-builder || true
+
+      - name: Create new isolated builder
+        run: docker buildx create --use --name custom-builder --driver docker-container
+
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
         with:
@@ -47,6 +57,7 @@ jobs:
           context: ./ฺBackend  # ✅ โฟลเดอร์ของ Go backend
           file: ./ฺBackend/Dockerfile
           push: true
+          no-cache: true
           tags: |
             ghcr.io/${{ env.REPO_LOWER }}-backend:latest
             ghcr.io/${{ env.REPO_LOWER }}-backend:${{ github.sha }}

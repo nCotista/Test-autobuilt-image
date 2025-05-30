@@ -12,11 +12,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # - name: Generate .env file from secrets
-      #   run: |
-      #     echo "REACT_APP_API=${{ secrets.REACT_APP_API }}" >> frontend/.env
-      #     echo "REACT_APP_PORT=${{ secrets.REACT_APP_PORT }}" >> frontend/.env
-      #     echo "REACT_APP_ENV=production" >> frontend/.env
+      - name: Generate .env file from secrets
+        run: |
+          echo "REACT_APP_API=${{ secrets.REACT_APP_API }}" >> frontend/.env
+          echo "REACT_APP_PORT=${{ secrets.REACT_APP_PORT }}" >> frontend/.env
+          echo "REACT_APP_ENV=production" >> frontend/.env
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
